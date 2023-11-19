@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import { Product } from "../models/Product";
 
 export const getProducts = async (req, res) => {
@@ -29,7 +31,11 @@ export const createProduct = async (req, res) => {
       }
     );
 
-    await Record.create({ userId, action: "createProduct" });
+    await Record.create({
+      userId,
+      action: "createProduct",
+      productId: newProduct.id,
+    });
 
     res.status(200).send(newProduct);
   } catch (error) {
@@ -56,7 +62,11 @@ export const updateProduct = async (req, res) => {
 
     await product.save();
 
-    await Record.create({ userId, action: "updateProduct" });
+    await Record.create({
+      userId,
+      action: "updateProduct",
+      productId: product.id,
+    });
 
     res.status(200).send(product);
   } catch (error) {
@@ -75,7 +85,11 @@ export const deleteProduct = async (req, res) => {
     }
     product.update({ status: 0 });
 
-    await Record.create({ userId, action: "deleteProduct" });
+    await Record.create({
+      userId,
+      action: "deleteProduct",
+      productId: product.id,
+    });
 
     res.status(200).send(product);
   } catch (error) {
@@ -88,11 +102,22 @@ export const deleteProduct = async (req, res) => {
 export const getProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    const { key, name, brand, createdAt, updatedAt } = req.query;
+
+    const whereClause = {
+      id,
+      status: 1,
+      [Op.or]: [
+        { key: { [Op.like]: `%${key || ""}%` } },
+        { name: { [Op.like]: `%${name || ""}%` } },
+        { brand: { [Op.like]: `%${brand || ""}%` } },
+        { createdAt: { [Op.like]: `%${createdAt || ""}%` } },
+        { updatedAt: { [Op.like]: `%${updatedAt || ""}%` } },
+      ],
+    };
+
     const product = await Product.findOne({
-      where: {
-        id,
-        status: 1,
-      },
+      where: whereClause,
     });
 
     if (!product) {

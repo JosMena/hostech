@@ -28,7 +28,11 @@ export const createBrand = async (req, res) => {
       }
     );
 
-    await Record.create({ userId, action: "createBrand" });
+    await Record.create({
+      userId,
+      action: "createBrand",
+      brandId: newBrand.id,
+    });
 
     res.status(200).send(newBrand);
   } catch (error) {
@@ -53,7 +57,7 @@ export const updateBrand = async (req, res) => {
 
     await brand.save();
 
-    await Record.create({ userId, action: "updateBrand" });
+    await Record.create({ userId, action: "updateBrand", brandId: brand.id });
 
     res.status(200).send(brand);
   } catch (error) {
@@ -72,7 +76,11 @@ export const deleteBrand = async (req, res) => {
     }
     brand.update({ status: 0 });
 
-    await Record.create({ userId: brand.userId, action: "deleteBrand" });
+    await Record.create({
+      userId: brand.userId,
+      action: "deleteBrand",
+      brandId: brand.id,
+    });
 
     res.status(200).send(brand);
   } catch (error) {

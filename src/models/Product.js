@@ -25,12 +25,11 @@ export const Product = sequelize.define(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
   }
 );
 
 // Associations
-
 Product.belongsTo(Brand, {
   foreignKey: "brandId",
   targetId: "id",
