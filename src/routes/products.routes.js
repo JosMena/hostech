@@ -8,13 +8,15 @@ import {
   getProduct,
 } from "../controllers/products.controller";
 
+import { validateJWT } from "../middlewares/validateJWT";
+
 const router = Router();
 
 // Routes
-router.get("/", getProducts);
-router.post("/", createProduct);
-router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
-router.get("/:id", getProduct);
+router.get("/", validateJWT, getProducts);
+router.post("/", validateJWT, createProduct);
+router.put("/:id", validateJWT, updateProduct);
+router.delete("/:id", validateJWT, deleteProduct);
+router.get("/:id", validateJWT, getProduct);
 
 export default router;
