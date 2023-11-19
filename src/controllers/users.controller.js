@@ -1,6 +1,8 @@
+import bcrypt from "bcrypt";
+import { Op } from "sequelize";
+
 import { Product } from "../models/Product.js";
 import { User } from "../models/User.js";
-import bcrypt from "bcrypt";
 
 export const getUsers = async (req, res) => {
   try {
@@ -124,6 +126,40 @@ export const getProductsByUser = async (req, res) => {
     }
 
     res.status(200).send(userProducts);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getUsersLogs = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    const parsedStartDate = startDate ? new Date(startDate) : null;
+    const parsedEndDate = endDate ? new Date(endDate) : null;
+
+    const dateConditions = {};
+    if (parsedStartDate) {
+      dateConditions.createdAt = {
+        [Op.gte]: parsedStartDate,
+      };
+    }
+    if (parsedEndDate) {
+      dateConditions.createdAt = {
+        ...dateConditions.createdAt,
+        [Op.lte]: parsedEndDate,
+      };
+    }
+
+    const users = await User.findAll({
+      attributes: ["id", "name", "lastName", "email"],
+      where: { status: 1 },
+      ...dateConditions,
+    });
+
+    res.status(202).send(users);
   } catch (error) {
     res.status(500).json({
       message: error.message,

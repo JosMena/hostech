@@ -7,6 +7,7 @@ import {
   deleteUser,
   getUser,
   getProductsByUser,
+  getUsersLogs,
 } from "../controllers/users.controller.js";
 
 import { validateJWT } from "../middlewares/validateJWT.js";
@@ -22,5 +23,7 @@ router.delete("/:id", validateJWT, validateUserId, deleteUser);
 router.get("/:id", validateJWT, getUser);
 
 router.get("/:id/products", validateJWT, getProductsByUser);
+
+router.get("/logs", validateJWT, getUsersLogs);
 
 export default router;
